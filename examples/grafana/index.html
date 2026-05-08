@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ActTrace — Grafana / Loki Demo</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 660px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+    h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+    .hint { color: #666; font-size: 0.88rem; margin: 0 0 0.75rem; }
+    .hint a { color: #f59e0b; font-weight: 600; }
+    .setup { background: #fefce8; border: 1px solid #fde68a; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1rem; font-size: 0.84rem; line-height: 1.6; }
+    .setup code { background: #fef3c7; padding: 0.1rem 0.35rem; border-radius: 3px; font-family: monospace; }
+
+    section, form { border: 1px solid #e2e8f0; padding: 1rem 1.25rem; margin: 0.75rem 0; border-radius: 8px; background: #f8fafc; }
+    section.net-errors { border-color: #fca5a5; background: #fff5f5; }
+    section.js-errors  { border-color: #c4b5fd; background: #faf5ff; }
+
+    h2 { margin: 0 0 0.6rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #94a3b8; }
+    h2.net { color: #f87171; }
+    h2.js  { color: #a78bfa; }
+
+    .desc { font-size: 0.8rem; color: #64748b; margin: 0 0 0.6rem; line-height: 1.4; }
+
+    input { display: block; margin: 0.4rem 0; padding: 0.4rem 0.6rem; width: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.9rem; }
+    .btn-row { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+    button { padding: 0.38rem 0.85rem; cursor: pointer; border-radius: 5px; font-size: 0.82rem; border: 1px solid #94a3b8; background: #fff; }
+    button:hover { background: #f1f5f9; }
+    button.net-btn  { border-color: #fca5a5; color: #dc2626; }
+    button.net-btn:hover { background: #fef2f2; }
+    button.js-btn   { border-color: #c4b5fd; color: #7c3aed; }
+    button.js-btn:hover { background: #f5f3ff; }
+
+    ul { margin: 0.5rem 0 0; padding-left: 1.25rem; }
+    li { font-size: 0.88rem; margin: 0.2rem 0; }
+    #log { font-size: 0.78rem; color: #64748b; margin-top: 0.55rem; min-height: 1.1rem; }
+    #log .ok  { color: #16a34a; }
+    #log .err { color: #dc2626; }
+  </style>
+</head>
+<body>
+  <h1>ActTrace — Grafana / Loki Demo</h1>
+  <p class="hint">
+    Every interaction, error, and warning is forwarded to Loki.
+    Watch them live in the
+    <a href="http://localhost:3002/d/acttrace-v1" target="_blank">Grafana Dashboard →</a>
+  </p>
+
+  <div class="setup">
+    <strong>Stack:</strong> Loki :3100 &nbsp;·&nbsp; Grafana :3002 &nbsp;·&nbsp; Vite :5175<br/>
+    <code>pnpm stack:up</code> → start Docker stack &nbsp;·&nbsp;
+    <code>pnpm dev</code> → start this page
+  </div>
+
+  <!-- ── Normal interactions ── -->
+  <section data-act-boundary="CustomerModule">
+    <h2>Customer Module</h2>
+    <input placeholder="Customer name" />
+    <input type="password" placeholder="Password (sensitive — omitted from trace)" />
+    <button data-act="customer.save">Save Customer</button>
+    <ul id="customer-list"></ul>
+  </section>
+
+  <section data-act-boundary="SearchModule">
+    <h2>Search Module</h2>
+    <input data-act="search.query" placeholder="Search…" />
+  </section>
+
+  <form data-act-boundary="LoginForm">
+    <h2>Login Form</h2>
+    <input type="text" name="username" placeholder="Username" />
+    <input type="password" name="password" placeholder="Password (sensitive)" />
+    <button type="submit" data-act="auth.login">Login</button>
+  </form>
+
+  <!-- ── Network error simulation ── -->
+  <section class="net-errors" data-act-boundary="NetworkErrorSim">
+    <h2 class="net">Network Error Simulation</h2>
+    <p class="desc">
+      These trigger real HTTP failures. ActTrace records the failed network call
+      and the trace appears in Grafana under <strong>Error Traces</strong>.
+    </p>
+    <div class="btn-row">
+      <button class="net-btn" data-act="error.not-found">404 Not Found</button>
+      <button class="net-btn" data-act="error.server-crash">500 Server Error</button>
+      <button class="net-btn" data-act="error.slow-response">Slow Response (2.5 s)</button>
+      <button class="net-btn" data-act="error.network-fail">Connection Refused</button>
+    </div>
+  </section>
+
+  <!-- ── Frontend JS error simulation ── -->
+  <section class="js-errors" data-act-boundary="FrontendErrorSim">
+    <h2 class="js">Frontend JS Error Simulation</h2>
+    <p class="desc">
+      These simulate real frontend bugs — <strong>nothing appears in the UI</strong> by design.
+      The browser console and Grafana's <strong>Frontend JS Errors</strong> panel
+      are the only places they show up, exactly as in production.
+    </p>
+    <div class="btn-row">
+      <button class="js-btn" data-act="sim.uncaught-error">Uncaught TypeError</button>
+      <button class="js-btn" data-act="sim.unhandled-rejection">Unhandled Rejection</button>
+      <button class="js-btn" data-act="sim.reference-error">ReferenceError</button>
+      <button class="js-btn" data-act="sim.console-warn">console.warn</button>
+      <button class="js-btn" data-act="sim.console-error">console.error</button>
+      <button class="js-btn" data-act="sim.silent-api-fail">Silent API Fail</button>
+    </div>
+    <div id="log"></div>
+  </section>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

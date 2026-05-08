@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ActTrace — Demo</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 620px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+    h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+    .hint { color: #666; font-size: 0.88rem; margin: 0 0 1.5rem; }
+    .hint a { color: #3b82f6; }
+    section, form { border: 1px solid #e2e8f0; padding: 1rem 1.25rem; margin: 0.75rem 0; border-radius: 8px; background: #f8fafc; }
+    h2 { margin-top: 0; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #94a3b8; }
+    input { display: block; margin: 0.4rem 0; padding: 0.4rem 0.6rem; width: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.9rem; }
+    button { padding: 0.4rem 0.9rem; margin-top: 0.4rem; cursor: pointer; border: 1px solid #94a3b8; border-radius: 5px; background: #fff; font-size: 0.88rem; }
+    button:hover { background: #f1f5f9; }
+    ul { margin: 0.6rem 0 0; padding-left: 1.25rem; }
+    li { font-size: 0.88rem; margin: 0.2rem 0; }
+  </style>
+</head>
+<body>
+  <h1>ActTrace — Demo Page</h1>
+  <p class="hint">
+    Traces are sent to the server and shown in real-time on the
+    <a href="/dashboard.html" target="_blank">Dashboard →</a>
+  </p>
+
+  <section data-act-boundary="CustomerModule">
+    <h2>Customer Module</h2>
+    <input placeholder="Customer name" />
+    <input type="password" placeholder="Password (sensitive — omitted from traces)" />
+    <button data-act="customer.save">Save Customer</button>
+    <ul id="customer-list"></ul>
+  </section>
+
+  <section data-act-boundary="SearchModule">
+    <h2>Search Module</h2>
+    <input data-act="search.query" placeholder="Search… (triggers fetch on each keystroke)" />
+  </section>
+
+  <form data-act-boundary="LoginForm">
+    <h2>Login Form</h2>
+    <input type="text" name="username" placeholder="Username" />
+    <input type="password" name="password" placeholder="Password (sensitive)" />
+    <button type="submit" data-act="auth.login">Login</button>
+  </form>
+
+  <script type="module" src="/src/demo.ts"></script>
+</body>
+</html>

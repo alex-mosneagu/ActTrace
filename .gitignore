@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.local
+.DS_Store
+
+# Grafana / Loki Docker volumes (auto-created, not source)
+examples/grafana/provisioning/dashboards/*.yaml.bak

@@ -1,0 +1,30 @@
+{
+  "name": "@acttrace/browser",
+  "version": "0.0.1",
+  "description": "Zero-config TypeScript browser library for frontend interaction tracing",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0",
+    "jsdom": "^25.0.0",
+    "@types/node": "^22.0.0"
+  },
+  "license": "MIT"
+}

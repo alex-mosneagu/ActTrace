@@ -1,0 +1,10 @@
+{
+  "name": "acttrace",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "pnpm --filter @acttrace/browser build",
+    "test": "pnpm --filter @acttrace/browser test",
+    "dev": "pnpm --filter vite-demo dev"
+  }
+}
