@@ -3,5 +3,9 @@ dist/
 *.local
 .DS_Store
 
+# Internal planning files
+TODO.md
+PROGRESS.md
+
 # Grafana / Loki Docker volumes (auto-created, not source)
 examples/grafana/provisioning/dashboards/*.yaml.bak
